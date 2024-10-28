@@ -11,7 +11,6 @@ app.use(cors({
 }
 ));
 
-console.log(process.env.DATABASE_USERNAME);
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@business-management.jnao5.mongodb.net/?retryWrites=true&w=majority&appName=Business-Management`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -39,14 +38,19 @@ run().catch(console.dir);
 
 const usersCollection = client.db("BusinessManagement").collection("users");
 app.get("/",async (req,res)=>{
-    const result=await usersCollection.find().toArray();
-    res.send(result);
+   res.send("server is crawlinggggg")
 })
 
 app.post("/login", async (req,res) => {
-    const name=req.body;
-    console.log( "login route hit",name);
-    res.send(name)
+    const {username,password}=req.body;
+    const query={username,password}
+    const result=await usersCollection.find(query).toArray();
+    if(result.length===0){
+        res.send({userFound:false,message:"User not found"})
+    }else{
+        res.send({userFound:true,result})
+    }
+    
 })
 
 
